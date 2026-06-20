@@ -1,0 +1,36 @@
+{
+  "hosting": {
+    "public": ".",
+    "ignore": [
+      "firebase.json",
+      "firestore.rules",
+      "storage.rules",
+      "mail.html",
+      "**/.*",
+      "**/node_modules/**",
+      "*.log",
+      "*.zip",
+      "*.env",
+      "*serviceAccount*.json",
+      "*private*.json"
+    ],
+    "headers": [
+      {
+        "source": "/admin-cms.html",
+        "headers": [
+          {
+            "key": "X-Robots-Tag",
+            "value": "noindex, nofollow, noarchive"
+          },
+          {
+            "key": "Cache-Control",
+            "value": "no-store"
+          }
+        ]
+      }
+    ]
+  },
+  "firestore": {
+    "rules": "firestore.rules"
+  }
+}

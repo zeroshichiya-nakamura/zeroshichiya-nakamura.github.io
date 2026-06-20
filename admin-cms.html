@@ -1,0 +1,357 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <meta name="robots" content="noindex,nofollow" />
+  <title>零七家/中村 奈津枝｜たかなおCMS</title>
+  <style>
+    :root{
+      --ink:#153c43;--muted:#617b83;--sea:#68d7df;--deep:#147184;--bg:#effdff;--line:rgba(20,113,132,.18);--card:rgba(255,255,255,.82);--shadow:0 18px 55px rgba(17,67,78,.12);--danger:#b42318;--ok:#147184;--radius:22px
+    }
+    *{box-sizing:border-box}body{margin:0;color:var(--ink);font-family:"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",Meiryo,sans-serif;background:radial-gradient(circle at 20% 0%,rgba(104,215,223,.28),transparent 35%),linear-gradient(180deg,#f7feff,#fffaf1 62%,#effdff);line-height:1.7;letter-spacing:.035em}button,input,textarea{font:inherit}a{color:var(--deep)}.app{width:min(100%,1120px);margin:0 auto;padding:26px 16px 60px}.top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:18px}.brand p{margin:0;color:var(--deep);font-weight:900;font-size:13px;letter-spacing:.14em;text-transform:uppercase}.brand h1{margin:4px 0 0;font-size:clamp(27px,4vw,44px);line-height:1.25}.card{background:var(--card);border:1px solid rgba(255,255,255,.86);border-radius:var(--radius);box-shadow:var(--shadow);backdrop-filter:blur(10px);padding:clamp(18px,3vw,28px);margin:16px 0}.login-card{max-width:520px;margin:44px auto}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}.grid-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:14px}.full{grid-column:1/-1}.field{display:grid;gap:7px}label{font-size:13px;font-weight:900;color:#315862}input,textarea{width:100%;border:1px solid var(--line);background:rgba(255,255,255,.92);border-radius:14px;padding:12px 13px;color:var(--ink);outline:none}textarea{min-height:112px;resize:vertical}.mono{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;letter-spacing:0}.hint{margin:6px 0 0;color:var(--muted);font-size:12px}.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;border:0;border-radius:999px;padding:10px 18px;font-weight:900;cursor:pointer;text-decoration:none}.primary{color:#fff;background:linear-gradient(135deg,var(--sea),var(--deep));box-shadow:0 12px 26px rgba(20,113,132,.20)}.light{color:var(--deep);background:#fff;border:1px solid var(--line)}.danger{color:#fff;background:var(--danger)}.status{min-height:24px;margin-top:12px;color:var(--ok);font-size:13px;font-weight:850}.status.is-error{color:var(--danger)}.section-title{margin:0 0 14px;font-size:20px}.smallbar{display:flex;align-items:center;justify-content:space-between;gap:12px;color:var(--muted);font-size:13px}.hidden{display:none!important}.user{font-weight:900;color:var(--deep)}.notice{border-left:4px solid var(--deep);padding:12px 14px;background:rgba(255,255,255,.58);border-radius:14px;color:#315862}.notice code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace}@media(max-width:760px){.top,.smallbar{display:block}.grid,.grid-3{grid-template-columns:1fr}.actions .btn{flex:1 1 180px}}
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="top">
+      <div class="brand">
+        <p>零七家/中村 奈津枝</p>
+        <h1>たかなお CMS</h1>
+      </div>
+      <div id="userBox" class="smallbar hidden">
+        <span>ログイン中：<span id="currentUser" class="user"></span></span>
+        <button class="btn light" id="signOutBtn" type="button">ログアウト</button>
+      </div>
+    </div>
+
+    <section id="loginCard" class="card login-card">
+      <h2 class="section-title">管理者ログイン</h2>
+      <p class="notice">Firebase Authentication のメール/パスワードでログインします。Firestore Security Rulesで許可されたアカウントだけが保存できます。</p>
+      <form id="loginForm" class="grid">
+        <div class="field full">
+          <label for="loginEmail">メールアドレス</label>
+          <input id="loginEmail" type="email" autocomplete="email" required placeholder="admin@example.com" />
+        </div>
+        <div class="field full">
+          <label for="loginPassword">パスワード</label>
+          <input id="loginPassword" type="password" autocomplete="current-password" required placeholder="パスワード" />
+        </div>
+        <div class="actions full">
+          <button class="btn primary" type="submit">ログイン</button>
+        </div>
+      </form>
+      <p id="loginStatus" class="status"></p>
+    </section>
+
+    <main id="editor" class="hidden">
+      <section class="card">
+        <h2 class="section-title">基本操作</h2>
+        <p class="notice">「保存」すると Firestore の <code>siteContent/home</code> に反映されます。公開ページ側の <code>index.html</code> がFirestoreを読み込む形にしてある場合、再デプロイなしで表示が変わります。</p>
+        <div class="actions">
+          <button class="btn light" id="loadBtn" type="button">Firestoreから再読込</button>
+          <button class="btn primary" id="saveBtn" type="button">Firestoreへ保存</button>
+          <button class="btn light" id="seedBtn" type="button">初期データを入れる</button>
+          <a class="btn light" href="./index.html" target="_blank" rel="noopener">公開ページを開く</a>
+        </div>
+        <p id="saveStatus" class="status"></p>
+      </section>
+
+      <form id="cmsForm">
+        <section class="card">
+          <h2 class="section-title">ページ・マネージャー情報</h2>
+          <div class="grid">
+            <div class="field"><label for="metaTitle">ページタイトル</label><input id="metaTitle" /></div>
+            <div class="field"><label for="metaDescription">ページ説明文</label><input id="metaDescription" /></div>
+            <div class="field"><label for="managerRole">肩書き</label><input id="managerRole" /></div>
+            <div class="field"><label for="managerName">名前</label><input id="managerName" /></div>
+            <div class="field full"><label for="managerPhotoUrl">プロフィール写真URL</label><input id="managerPhotoUrl" class="mono" /></div>
+            <div class="field full"><label for="managerMessage">挨拶文</label><textarea id="managerMessage"></textarea></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2 class="section-title">リンク</h2>
+          <div class="grid">
+            <div class="field"><label for="officialHpUrl">公式HP URL</label><input id="officialHpUrl" class="mono" /></div>
+            <div class="field"><label for="officialHpText">公式HPボタン文言</label><input id="officialHpText" /></div>
+            <div class="field"><label for="brandInstagramUrl">公式Instagram URL</label><input id="brandInstagramUrl" class="mono" /></div>
+            <div class="field"><label for="brandInstagramText">公式Instagramボタン文言</label><input id="brandInstagramText" /></div>
+            <div class="field"><label for="worksInstagramUrl">作品Instagram URL</label><input id="worksInstagramUrl" class="mono" /></div>
+            <div class="field"><label for="worksInstagramText">作品Instagramボタン文言</label><input id="worksInstagramText" /></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2 class="section-title">作品紹介</h2>
+          <div class="grid">
+            <div class="field"><label for="worksKicker">小見出し</label><input id="worksKicker" /></div>
+            <div class="field"><label for="worksTitle">見出し</label><input id="worksTitle" /></div>
+            <div class="field full"><label for="postUrls">Instagram投稿URL</label><textarea id="postUrls" class="mono" placeholder="1行に1URLで入力"></textarea><p class="hint">例：https://www.instagram.com/p/XXXXXXXXXXX/</p></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2 class="section-title">オーダーの流れ</h2>
+          <div class="grid-3">
+            <div class="field"><label for="order1Title">01 タイトル</label><input id="order1Title" /></div>
+            <div class="field"><label for="order2Title">02 タイトル</label><input id="order2Title" /></div>
+            <div class="field"><label for="order3Title">03 タイトル</label><input id="order3Title" /></div>
+            <div class="field"><label for="order1Text">01 説明</label><textarea id="order1Text"></textarea></div>
+            <div class="field"><label for="order2Text">02 説明</label><textarea id="order2Text"></textarea></div>
+            <div class="field"><label for="order3Text">03 説明</label><textarea id="order3Text"></textarea></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2 class="section-title">お問い合わせ</h2>
+          <div class="grid">
+            <div class="field"><label for="contactKicker">小見出し</label><input id="contactKicker" /></div>
+            <div class="field"><label for="contactTitle">見出し</label><input id="contactTitle" /></div>
+            <div class="field full"><label for="contactLead">説明文</label><textarea id="contactLead"></textarea></div>
+            <div class="field"><label for="contactEmail">送信先メールアドレス</label><input id="contactEmail" class="mono" /></div>
+            <div class="field"><label for="contactSubject">メール件名</label><input id="contactSubject" /></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2 class="section-title">キャンペーン・クーポン</h2>
+          <div class="grid">
+            <div class="field"><label for="campaignKicker">小見出し</label><input id="campaignKicker" /></div>
+            <div class="field"><label for="campaignTitle">タイトル</label><input id="campaignTitle" /></div>
+            <div class="field full"><label for="campaignLead">リード文</label><input id="campaignLead" /></div>
+            <div class="field"><label for="ticketLabel">チケットラベル</label><input id="ticketLabel" /></div>
+            <div class="field"><label for="ticketTitle">チケットタイトル</label><input id="ticketTitle" /></div>
+            <div class="field full"><label for="ticketNote">チケット説明</label><input id="ticketNote" /></div>
+            <div class="field"><label for="couponCode">クーポンコード</label><input id="couponCode" class="mono" /></div>
+            <div class="field"><label for="campaignCredit">注記</label><input id="campaignCredit" /></div>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2 class="section-title">所在地・フッター</h2>
+          <div class="grid">
+            <div class="field full"><label for="shopAddress">住所</label><textarea id="shopAddress"></textarea></div>
+            <div class="field"><label for="shopPhoneDisplay">電話番号表示</label><input id="shopPhoneDisplay" /></div>
+            <div class="field"><label for="shopPhoneHref">電話リンク用番号</label><input id="shopPhoneHref" class="mono" /></div>
+            <div class="field"><label for="shopEmail">表示メールアドレス</label><input id="shopEmail" class="mono" /></div>
+            <div class="field"><label for="footerText">フッター</label><input id="footerText" /></div>
+          </div>
+        </section>
+      </form>
+    </main>
+  </div>
+
+  <script src="/__/firebase/8.10.1/firebase-app.js"></script>
+  <script src="/__/firebase/8.10.1/firebase-auth.js"></script>
+  <script src="/__/firebase/8.10.1/firebase-firestore.js"></script>
+  <script src="/__/firebase/init.js"></script>
+  <script>
+    const DOC_REF = "siteContent/home";
+    const DEFAULTS = {
+      metaTitle:"零七家｜レジンアート作品",
+      metaDescription:"零七家｜中村 奈津枝。公式HP・公式Instagram・レジン作品紹介・お問い合わせはこちら。",
+      managerRole:"マネージャー",
+      managerName:"中村 奈津枝",
+      managerPhotoUrl:"https://zeroshichiya-nakamura.web.app/natsue.png",
+      managerMessage:"お客様へ、世界に一つのレジン作品を提供するお手伝いをさせていただきます。",
+      officialHpUrl:"https://zeroshichiya.jimdofree.com/",
+      officialHpText:"零七家 公式HP",
+      brandInstagramUrl:"https://www.instagram.com/zeroshichiya/",
+      brandInstagramText:"零七家 公式Instagram",
+      worksInstagramUrl:"https://www.instagram.com/n__art__n/",
+      worksInstagramText:"他の作品もInstagramで見る",
+      worksKicker:"Works",
+      worksTitle:"最新のレジン作品紹介",
+      postUrls:[
+        "https://www.instagram.com/p/DWaHKqOD9o4/",
+        "https://www.instagram.com/p/DUpKvVGD-ed/",
+        "https://www.instagram.com/p/DUzh-68j3ap/",
+        "https://www.instagram.com/p/DUhiZmSjzko/",
+        "https://www.instagram.com/p/DUPDpJ9kh0l/",
+        "https://www.instagram.com/p/DUw7r5Kj3LH/",
+        "https://www.instagram.com/p/DUH2OBvDzJ9/",
+        "https://www.instagram.com/p/DU4XR7SjzLS/",
+        "https://www.instagram.com/p/DVFfhDuD2I3/",
+        "https://www.instagram.com/p/DVPZI6nEpX_/",
+        "https://www.instagram.com/p/DVXJoL7kl9G/",
+        "https://www.instagram.com/p/DVZtViZDIkp/"
+      ],
+      orderSteps:[
+        {title:"ご相談", text:"フォームまたはInstagram DMから希望イメージをお送りください。"},
+        {title:"内容確認", text:"色味、サイズ、用途、納期、ご予算などを確認します。"},
+        {title:"制作・お届け", text:"制作後、完成イメージをご確認いただき発送いたします。"}
+      ],
+      contactKicker:"Contact",
+      contactTitle:"お問い合わせ",
+      contactLead:"オーダー相談、作品についての質問、プレゼントのご相談など、お気軽にお問い合わせください。",
+      contactEmail:"zeroshichiya+nakamura@gmail.com",
+      contactSubject:"【零七家/中村 奈津枝】お問い合わせ",
+      campaignKicker:"Limited Campaign!!",
+      campaignTitle:"スペシャルギフトをプレゼント！！",
+      campaignLead:"好きな貝殻を選びましょう！",
+      ticketLabel:"Special Ticket",
+      ticketTitle:"10%割引優待券",
+      ticketNote:"ご相談時に下記クーポンコードをお伝えください。",
+      couponCode:"CAMPAIGN26F",
+      campaignCredit:"名刺をお持ちの方限定のオファーです。",
+      shopAddress:"〒185-0012\n東京都国分寺市本町3-10-17 4F",
+      shopPhoneDisplay:"080-5054-0561",
+      shopPhoneHref:"08050540561",
+      shopEmail:"zeroshichiya+nakamura@gmail.com",
+      footerText:"© 零七家"
+    };
+
+    const $ = (id) => document.getElementById(id);
+    const loginCard = $("loginCard");
+    const editor = $("editor");
+    const userBox = $("userBox");
+    let auth = null;
+    let db = null;
+    let currentUser = null;
+
+    function status(id, message, isError=false){
+      const el = $(id);
+      if (!el) return;
+      el.textContent = message || "";
+      el.classList.toggle("is-error", !!isError);
+    }
+
+    function setValue(id, value){
+      const el = $(id);
+      if (el) el.value = value ?? "";
+    }
+
+    function getValue(id){
+      return ($(id)?.value || "").trim();
+    }
+
+    function fillForm(data){
+      const d = Object.assign({}, DEFAULTS, data || {});
+      ["metaTitle","metaDescription","managerRole","managerName","managerPhotoUrl","managerMessage","officialHpUrl","officialHpText","brandInstagramUrl","brandInstagramText","worksInstagramUrl","worksInstagramText","worksKicker","worksTitle","contactKicker","contactTitle","contactLead","contactEmail","contactSubject","campaignKicker","campaignTitle","campaignLead","ticketLabel","ticketTitle","ticketNote","couponCode","campaignCredit","shopAddress","shopPhoneDisplay","shopPhoneHref","shopEmail","footerText"].forEach((key)=>setValue(key,d[key]));
+      setValue("postUrls", Array.isArray(d.postUrls) ? d.postUrls.join("\n") : "");
+      const steps = Array.isArray(d.orderSteps) ? d.orderSteps : DEFAULTS.orderSteps;
+      for (let i=0;i<3;i++){
+        setValue(`order${i+1}Title`, steps[i]?.title || "");
+        setValue(`order${i+1}Text`, steps[i]?.text || "");
+      }
+    }
+
+    function readForm(){
+      return {
+        metaTitle:getValue("metaTitle"),
+        metaDescription:getValue("metaDescription"),
+        managerRole:getValue("managerRole"),
+        managerName:getValue("managerName"),
+        managerPhotoUrl:getValue("managerPhotoUrl"),
+        managerMessage:getValue("managerMessage"),
+        officialHpUrl:getValue("officialHpUrl"),
+        officialHpText:getValue("officialHpText"),
+        brandInstagramUrl:getValue("brandInstagramUrl"),
+        brandInstagramText:getValue("brandInstagramText"),
+        worksInstagramUrl:getValue("worksInstagramUrl"),
+        worksInstagramText:getValue("worksInstagramText"),
+        worksKicker:getValue("worksKicker"),
+        worksTitle:getValue("worksTitle"),
+        postUrls:getValue("postUrls").split(/\n+/).map(v=>v.trim()).filter(Boolean),
+        orderSteps:[1,2,3].map(n=>({title:getValue(`order${n}Title`), text:getValue(`order${n}Text`)})).filter(step=>step.title || step.text),
+        contactKicker:getValue("contactKicker"),
+        contactTitle:getValue("contactTitle"),
+        contactLead:getValue("contactLead"),
+        contactEmail:getValue("contactEmail"),
+        contactSubject:getValue("contactSubject"),
+        campaignKicker:getValue("campaignKicker"),
+        campaignTitle:getValue("campaignTitle"),
+        campaignLead:getValue("campaignLead"),
+        ticketLabel:getValue("ticketLabel"),
+        ticketTitle:getValue("ticketTitle"),
+        ticketNote:getValue("ticketNote"),
+        couponCode:getValue("couponCode"),
+        campaignCredit:getValue("campaignCredit"),
+        shopAddress:getValue("shopAddress"),
+        shopPhoneDisplay:getValue("shopPhoneDisplay"),
+        shopPhoneHref:getValue("shopPhoneHref"),
+        shopEmail:getValue("shopEmail"),
+        footerText:getValue("footerText")
+      };
+    }
+
+    async function loadData(){
+      if (!db) return;
+      status("saveStatus", "読み込み中です…");
+      try {
+        const snap = await db.doc(DOC_REF).get();
+        if (snap.exists) {
+          fillForm(snap.data());
+          status("saveStatus", "Firestoreから読み込みました。");
+        } else {
+          fillForm(DEFAULTS);
+          status("saveStatus", "まだデータがありません。必要なら『初期データを入れる』を押してください。");
+        }
+      } catch (error) {
+        status("saveStatus", "読み込みに失敗しました：" + error.message, true);
+      }
+    }
+
+    async function saveData(data, message){
+      if (!db || !currentUser) return;
+      status("saveStatus", "保存中です…");
+      try {
+        await db.doc(DOC_REF).set(Object.assign({}, data, {
+          updatedAt: firebase.firestore.FieldValue.serverTimestamp(),
+          updatedBy: currentUser.email || currentUser.uid
+        }), { merge: true });
+        status("saveStatus", message || "保存しました。公開ページを再読み込みして確認してください。");
+      } catch (error) {
+        status("saveStatus", "保存に失敗しました：" + error.message, true);
+      }
+    }
+
+    function showLoggedIn(user){
+      currentUser = user;
+      loginCard.classList.add("hidden");
+      editor.classList.remove("hidden");
+      userBox.classList.remove("hidden");
+      $("currentUser").textContent = user.email || user.uid;
+      loadData();
+    }
+
+    function showLoggedOut(){
+      currentUser = null;
+      loginCard.classList.remove("hidden");
+      editor.classList.add("hidden");
+      userBox.classList.add("hidden");
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+      fillForm(DEFAULTS);
+
+      if (!window.firebase || !firebase.apps || !firebase.apps.length) {
+        status("loginStatus", "Firebase SDKを読み込めません。Firebase Hosting上で開いてください。", true);
+        return;
+      }
+
+      auth = firebase.auth();
+      db = firebase.firestore();
+      auth.onAuthStateChanged((user) => user ? showLoggedIn(user) : showLoggedOut());
+    });
+
+    $("loginForm").addEventListener("submit", async (event) => {
+      event.preventDefault();
+      if (!auth) return;
+      status("loginStatus", "ログイン中です…");
+      try {
+        await auth.signInWithEmailAndPassword(getValue("loginEmail"), $("loginPassword").value);
+        status("loginStatus", "");
+      } catch (error) {
+        status("loginStatus", "ログインできませんでした：" + error.message, true);
+      }
+    });
+
+    $("signOutBtn").addEventListener("click", () => auth?.signOut());
+    $("loadBtn").addEventListener("click", loadData);
+    $("saveBtn").addEventListener("click", () => saveData(readForm()));
+    $("seedBtn").addEventListener("click", () => saveData(DEFAULTS, "初期データをFirestoreに保存しました。"));
+  </script>
+</body>
+</html>
